@@ -89,15 +89,15 @@ export default function DashboardPage() {
           connection, then run your first governed action.
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm font-semibold">
-          <a href="/app/onboarding" className="text-accent-700 hover:text-accent-500">
+          <Link href="/app/onboarding" className="text-accent-700 hover:text-accent-500">
             Continue onboarding →
-          </a>
-          <a
+          </Link>
+          <Link
             href="/governance/runtime-identities"
             className="text-accent-700 hover:text-accent-500"
           >
             Runtime identities →
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { SectionHeader } from "@/components/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Panel } from "@/components/registry/panel";
@@ -275,12 +276,12 @@ export default function ReportsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink-900">Policy Effectiveness</h2>
-            <a
+            <Link
               href="/governance/policies"
               className="text-sm font-semibold text-accent-700 hover:text-accent-500"
             >
               View policies →
-            </a>
+            </Link>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -328,24 +329,24 @@ export default function ReportsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink-900">Budget & Cost</h2>
-            <a
+            <Link
               href="/finops"
               className="text-sm font-semibold text-accent-700 hover:text-accent-500"
             >
               Open FinOps
-            </a>
-            <a
+            </Link>
+            <Link
               href="/finops#usage"
               className="text-sm font-semibold text-accent-700 hover:text-accent-500"
             >
               Open cost breakdown
-            </a>
-            <a
+            </Link>
+            <Link
               href="/risk/budgets"
               className="text-sm font-semibold text-accent-700 hover:text-accent-500"
             >
               Open budget management
-            </a>
+            </Link>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
