@@ -121,7 +121,7 @@ key_hash: "a4c8b2e1f7d6e9c3b5a8d7e4f1c9b6e3a2d5c8f1e4b7a9c6e3d2f5a8b1e4c7d9"
 
 **Plaintext key** (shown **only once** when issued):
 ```
-api_key: "RoqeNmc7akVWs3YyfpqQ-5sOh3rHpyPr-TWyv00DqtQ"
+api_key: "rai_example_key"
 ```
 
 ### 🔍 **Key Verification Process**
@@ -337,7 +337,7 @@ curl -X POST http://localhost:8001/admin/api/api-keys/issue \
 
 # Response (save this - shown only once!)
 {
-  "api_key": "RoqeNmc7akVWs3YyfpqQ-5sOh3rHpyPr-TWyv00DqtQ",
+  "api_key": "rai_example_key",
   "api_key_id": "6b664ec7-e0a3-485d-a7eb-382f692aefd1",
   "system_id": "my_system",
   "scopes": ["execute"],

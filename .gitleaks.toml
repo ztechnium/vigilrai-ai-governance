@@ -1,0 +1,15 @@
+[extend]
+useDefault = true
+
+# Documentation examples and unit-test fixtures. Git history still contains the
+# same placeholder curls and sample keys, so the allowlist is path-based.
+[[allowlists]]
+description = "Documented placeholders and test fixtures, not production credentials"
+paths = [
+  '''docs/API_KEY_STORAGE\.md''',
+  '''docs/testing/TESTING_GUIDE\.md''',
+  '''docs/releases/SYSTEM_STATUS\.md''',
+  '''docs/compliance/COMPLIANCE_FEATURES_ROADMAP\.md''',
+  '''packages/python-sdk/tests/helpers\.py''',
+  '''tests/architecture/test_log_redaction\.py''',
+]
