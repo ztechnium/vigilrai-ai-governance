@@ -1,0 +1,1022 @@
+{
+  "version": 1,
+  "source_type": "SEEDED_TEMPLATE",
+  "mcps": [
+    {
+      "canonical_key": "atlassian",
+      "display_name": "Atlassian",
+      "vendor": "Atlassian",
+      "description": "Atlassian Cloud MCP for Jira, Confluence, and related resources (Cursor plugin tool surface).",
+      "category": "collaboration",
+      "native_aliases": ["atlassian", "plugin-atlassian-atlassian"],
+      "tools": [
+        {
+          "native_name": "getAccessibleAtlassianResources",
+          "display_name": "Get Accessible Atlassian Resources",
+          "description": "List Atlassian cloud resources accessible to the current identity.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Auth"
+        },
+        {
+          "native_name": "atlassianUserInfo",
+          "display_name": "Atlassian User Info",
+          "description": "Get the current Atlassian user profile.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Auth"
+        },
+        {
+          "native_name": "getContentFormatGuide",
+          "display_name": "Get Content Format Guide",
+          "description": "Return content-format guidance for Confluence create/update tools.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "search",
+          "display_name": "Search",
+          "description": "Search Jira, Confluence, and linked data via Rovo Search.",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Search"
+        },
+        {
+          "native_name": "fetch",
+          "display_name": "Fetch",
+          "description": "Fetch a Jira issue or Confluence page by Atlassian Resource Identifier.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Search"
+        },
+        {
+          "native_name": "searchJiraIssuesUsingJql",
+          "display_name": "Search Jira Issues Using JQL",
+          "description": "Search Jira issues with JQL.",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getVisibleJiraProjects",
+          "display_name": "Get Visible Jira Projects",
+          "description": "List Jira projects visible to the current identity.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getJiraProjectIssueTypesMetadata",
+          "display_name": "Get Jira Project Issue Types Metadata",
+          "description": "Get issue types available in a Jira project.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getJiraIssueTypeMetaWithFields",
+          "display_name": "Get Jira Issue Type Field Metadata",
+          "description": "Get field metadata for a Jira issue type.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getJiraIssue",
+          "display_name": "Get Jira Issue",
+          "description": "Get Jira issue details.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getJiraIssueRemoteIssueLinks",
+          "display_name": "Get Jira Issue Remote Links",
+          "description": "Get remote links for a Jira issue.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getTransitionsForJiraIssue",
+          "display_name": "Get Transitions For Jira Issue",
+          "description": "List available transitions for a Jira issue.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "getIssueLinkTypes",
+          "display_name": "Get Issue Link Types",
+          "description": "List available Jira issue link types.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "lookupJiraAccountId",
+          "display_name": "Lookup Jira Account ID",
+          "description": "Lookup Jira user account IDs.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "createJiraIssue",
+          "display_name": "Create Jira Issue",
+          "description": "Create a Jira issue.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "editJiraIssue",
+          "display_name": "Edit Jira Issue",
+          "description": "Update fields on a Jira issue.",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "transitionJiraIssue",
+          "display_name": "Transition Jira Issue",
+          "description": "Transition a Jira issue to another status.",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Jira"
+        },
+        {
+          "native_name": "createIssueLink",
+          "display_name": "Create Issue Link",
+          "description": "Create a link between two Jira issues.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "addCommentToJiraIssue",
+          "display_name": "Add Comment To Jira Issue",
+          "description": "Add or update a comment on a Jira issue.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "addWorklogToJiraIssue",
+          "display_name": "Add Worklog To Jira Issue",
+          "description": "Add or update a worklog on a Jira issue.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Jira"
+        },
+        {
+          "native_name": "searchConfluenceUsingCql",
+          "display_name": "Search Confluence Using CQL",
+          "description": "Search Confluence content with CQL.",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluenceSpaces",
+          "display_name": "Get Confluence Spaces",
+          "description": "List Confluence spaces.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getPagesInConfluenceSpace",
+          "display_name": "Get Pages In Confluence Space",
+          "description": "List pages in a Confluence space.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluencePage",
+          "display_name": "Get Confluence Page",
+          "description": "Get a Confluence page.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluencePageDescendants",
+          "display_name": "Get Confluence Page Descendants",
+          "description": "List descendant pages under a Confluence page.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluencePageFooterComments",
+          "display_name": "Get Confluence Page Footer Comments",
+          "description": "List footer comments on a Confluence page.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluencePageInlineComments",
+          "display_name": "Get Confluence Page Inline Comments",
+          "description": "List inline comments on a Confluence page.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "getConfluenceCommentChildren",
+          "display_name": "Get Confluence Comment Children",
+          "description": "List child replies for a Confluence comment.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "createConfluencePage",
+          "display_name": "Create Confluence Page",
+          "description": "Create a Confluence page or blog post.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "updateConfluencePage",
+          "display_name": "Update Confluence Page",
+          "description": "Update a Confluence page or blog post.",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "createConfluenceFooterComment",
+          "display_name": "Create Confluence Footer Comment",
+          "description": "Create a footer comment on a Confluence page.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        },
+        {
+          "native_name": "createConfluenceInlineComment",
+          "display_name": "Create Confluence Inline Comment",
+          "description": "Create an inline comment on a Confluence page.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Confluence"
+        }
+      ]
+    },
+    {
+      "canonical_key": "cursor_local",
+      "display_name": "Cursor Local Runtime",
+      "vendor": "Cursor",
+      "description": "Local Cursor runtime capabilities enforced via beforeShellExecution hooks.",
+      "category": "runtime",
+      "native_aliases": ["cursor_local", "cursor", "shell"],
+      "tools": [
+        {
+          "native_name": "shell",
+          "display_name": "Shell",
+          "description": "Execute a local shell command from Cursor beforeShellExecution.",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": false,
+          "group": "Runtime"
+        }
+      ]
+    },
+    {
+      "canonical_key": "github",
+      "display_name": "GitHub",
+      "vendor": "GitHub",
+      "description": "GitHub repositories, issues, pull requests, and actions.",
+      "category": "source_control",
+      "native_aliases": ["github"],
+      "tools": [
+        {
+          "native_name": "read_repository",
+          "display_name": "Read Repository",
+          "description": "Read repository metadata and files.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Repositories"
+        },
+        {
+          "native_name": "list_issues",
+          "display_name": "List Issues",
+          "description": "List repository issues.",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Issues"
+        },
+        {
+          "native_name": "create_issue",
+          "display_name": "Create Issue",
+          "description": "Create a repository issue.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Issues"
+        },
+        {
+          "native_name": "create_pull_request",
+          "display_name": "Create Pull Request",
+          "description": "Open a pull request.",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Pull Requests"
+        },
+        {
+          "native_name": "merge_pull_request",
+          "display_name": "Merge Pull Request",
+          "description": "Merge a pull request into the target branch.",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Pull Requests"
+        },
+        {
+          "native_name": "delete_repository",
+          "display_name": "Delete Repository",
+          "description": "Permanently delete a repository.",
+          "capability_type": "DELETE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "CRITICAL",
+          "default_requires_approval": true,
+          "group": "Repositories"
+        }
+      ]
+    },
+    {
+      "canonical_key": "azure_devops",
+      "display_name": "Azure DevOps",
+      "vendor": "Microsoft",
+      "description": "Azure DevOps projects, work items, repos, pipelines, and wiki.",
+      "category": "devops",
+      "native_aliases": ["azure_devops", "ado", "azure-devops"],
+      "tools": [
+        {
+          "native_name": "list_projects",
+          "display_name": "List Projects",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Projects"
+        },
+        {
+          "native_name": "get_work_item",
+          "display_name": "Get Work Item",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Work Items"
+        },
+        {
+          "native_name": "create_work_item",
+          "display_name": "Create Work Item",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Work Items"
+        },
+        {
+          "native_name": "run_pipeline",
+          "display_name": "Run Pipeline",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Pipelines"
+        }
+      ]
+    },
+    {
+      "canonical_key": "slack",
+      "display_name": "Slack",
+      "vendor": "Slack",
+      "description": "Slack search, channels, messages, files, and users.",
+      "category": "collaboration",
+      "native_aliases": ["slack"],
+      "tools": [
+        {
+          "native_name": "search_messages",
+          "display_name": "Search Messages",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Search"
+        },
+        {
+          "native_name": "list_channels",
+          "display_name": "List Channels",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Channels"
+        },
+        {
+          "native_name": "send_message",
+          "display_name": "Send Message",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Messages"
+        },
+        {
+          "native_name": "update_message",
+          "display_name": "Update Message",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Messages"
+        }
+      ]
+    },
+    {
+      "canonical_key": "google_workspace",
+      "display_name": "Google Workspace",
+      "vendor": "Google",
+      "description": "Gmail, Drive, Docs, Sheets, and Calendar capabilities.",
+      "category": "productivity",
+      "native_aliases": ["google_workspace", "google", "gworkspace"],
+      "tools": [
+        {
+          "native_name": "gmail_search",
+          "display_name": "Gmail Search",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Gmail"
+        },
+        {
+          "native_name": "gmail_send",
+          "display_name": "Gmail Send",
+          "capability_type": "CREATE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Gmail"
+        },
+        {
+          "native_name": "drive_list",
+          "display_name": "Drive List",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Drive"
+        },
+        {
+          "native_name": "sheets_update",
+          "display_name": "Sheets Update",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Sheets"
+        }
+      ]
+    },
+    {
+      "canonical_key": "salesforce",
+      "display_name": "Salesforce",
+      "vendor": "Salesforce",
+      "description": "Salesforce query, records, and flow/action capabilities.",
+      "category": "crm",
+      "native_aliases": ["salesforce", "sfdc"],
+      "tools": [
+        {
+          "native_name": "soql_query",
+          "display_name": "SOQL Query",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Query/Search"
+        },
+        {
+          "native_name": "get_record",
+          "display_name": "Get Record",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Read Records"
+        },
+        {
+          "native_name": "create_record",
+          "display_name": "Create Record",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Create Records"
+        },
+        {
+          "native_name": "update_record",
+          "display_name": "Update Record",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Update Records"
+        },
+        {
+          "native_name": "delete_record",
+          "display_name": "Delete Record",
+          "capability_type": "DELETE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Delete Records"
+        }
+      ]
+    },
+    {
+      "canonical_key": "aws",
+      "display_name": "AWS",
+      "vendor": "Amazon",
+      "description": "Broad AWS governance groups for discovery, read, change, IAM, and operations.",
+      "category": "cloud",
+      "native_aliases": ["aws", "amazon_aws"],
+      "tools": [
+        {
+          "native_name": "discover_resources",
+          "display_name": "Discover Resources",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Resource Discovery"
+        },
+        {
+          "native_name": "read_resource",
+          "display_name": "Read Resource",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Read"
+        },
+        {
+          "native_name": "change_infrastructure",
+          "display_name": "Change Infrastructure",
+          "capability_type": "UPDATE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Infrastructure Change"
+        },
+        {
+          "native_name": "modify_iam",
+          "display_name": "Modify IAM/Security",
+          "capability_type": "ADMIN",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "CRITICAL",
+          "default_requires_approval": true,
+          "group": "IAM/Security"
+        },
+        {
+          "native_name": "execute_operation",
+          "display_name": "Execute Operation",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Execution/Operations"
+        }
+      ]
+    },
+    {
+      "canonical_key": "postgresql",
+      "display_name": "PostgreSQL",
+      "vendor": "PostgreSQL",
+      "description": "Baseline PostgreSQL inspect/list/query capabilities. Writes and DDL require separate discovery.",
+      "category": "database",
+      "native_aliases": ["postgresql", "postgres", "pg"],
+      "tools": [
+        {
+          "native_name": "inspect_schema",
+          "display_name": "Inspect Schema",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "list_tables",
+          "display_name": "List Tables",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "query",
+          "display_name": "Query / Read",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false
+        }
+      ]
+    },
+    {
+      "canonical_key": "filesystem",
+      "display_name": "Filesystem",
+      "vendor": "Local",
+      "description": "Local filesystem read/list/search/write/move/delete capabilities.",
+      "category": "local",
+      "native_aliases": ["filesystem", "fs", "local_fs"],
+      "tools": [
+        {
+          "native_name": "read_file",
+          "display_name": "Read File",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "read"
+        },
+        {
+          "native_name": "list_directory",
+          "display_name": "List Directory",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "list"
+        },
+        {
+          "native_name": "search_files",
+          "display_name": "Search Files",
+          "capability_type": "SEARCH",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "search"
+        },
+        {
+          "native_name": "write_file",
+          "display_name": "Write File",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "write"
+        },
+        {
+          "native_name": "move_path",
+          "display_name": "Move Path",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "move"
+        },
+        {
+          "native_name": "delete_path",
+          "display_name": "Delete Path",
+          "capability_type": "DELETE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "delete"
+        }
+      ]
+    },
+    {
+      "canonical_key": "sentry",
+      "display_name": "Sentry",
+      "vendor": "Sentry",
+      "description": "Sentry issues, errors, events, traces, and project metadata.",
+      "category": "observability",
+      "native_aliases": ["sentry"],
+      "tools": [
+        {
+          "native_name": "list_issues",
+          "display_name": "List Issues",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Issues"
+        },
+        {
+          "native_name": "get_event",
+          "display_name": "Get Event",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Events"
+        },
+        {
+          "native_name": "resolve_issue",
+          "display_name": "Resolve Issue",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Issues"
+        }
+      ]
+    },
+    {
+      "canonical_key": "frappe",
+      "display_name": "Frappe / ERPNext",
+      "vendor": "Frappe",
+      "description": "Generic Frappe/ERPNext document lifecycle capabilities.",
+      "category": "erp",
+      "native_aliases": ["frappe", "erpnext"],
+      "tools": [
+        {
+          "native_name": "get_doc",
+          "display_name": "Get Doc",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "get_list",
+          "display_name": "Get List",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "insert_doc",
+          "display_name": "Insert Doc",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "update_doc",
+          "display_name": "Update Doc",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "HIGH",
+          "default_requires_approval": false
+        },
+        {
+          "native_name": "submit_doc",
+          "display_name": "Submit Doc",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true
+        },
+        {
+          "native_name": "cancel_doc",
+          "display_name": "Cancel Doc",
+          "capability_type": "EXECUTE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true
+        },
+        {
+          "native_name": "delete_doc",
+          "display_name": "Delete Doc",
+          "capability_type": "DELETE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "CRITICAL",
+          "default_requires_approval": true
+        }
+      ]
+    },
+    {
+      "canonical_key": "strapi",
+      "display_name": "Strapi",
+      "vendor": "Strapi",
+      "description": "Strapi content types, entries, media, and schema metadata.",
+      "category": "cms",
+      "native_aliases": ["strapi"],
+      "tools": [
+        {
+          "native_name": "list_content_types",
+          "display_name": "List Content Types",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Content Types"
+        },
+        {
+          "native_name": "read_entry",
+          "display_name": "Read Entry",
+          "capability_type": "READ",
+          "side_effect": "NONE",
+          "default_risk": "LOW",
+          "default_requires_approval": false,
+          "group": "Read Entry"
+        },
+        {
+          "native_name": "create_entry",
+          "display_name": "Create Entry",
+          "capability_type": "CREATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Create Entry"
+        },
+        {
+          "native_name": "update_entry",
+          "display_name": "Update Entry",
+          "capability_type": "UPDATE",
+          "side_effect": "REVERSIBLE",
+          "default_risk": "MEDIUM",
+          "default_requires_approval": false,
+          "group": "Update Entry"
+        },
+        {
+          "native_name": "delete_entry",
+          "display_name": "Delete Entry",
+          "capability_type": "DELETE",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Delete Entry"
+        },
+        {
+          "native_name": "manage_schema",
+          "display_name": "Manage Schema",
+          "capability_type": "ADMIN",
+          "side_effect": "CONSEQUENTIAL",
+          "default_risk": "HIGH",
+          "default_requires_approval": true,
+          "group": "Schema/Metadata"
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "provider": "Google",
+      "family": "gemini",
+      "model_name": "gemini-2.5-pro",
+      "display_name": "Gemini 2.5 Pro",
+      "model_version": "2.5",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Google Gemini 2.5 Pro."
+    },
+    {
+      "provider": "Google",
+      "family": "gemini",
+      "model_name": "gemini-2.5-flash",
+      "display_name": "Gemini 2.5 Flash",
+      "model_version": "2.5",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Google Gemini 2.5 Flash."
+    },
+    {
+      "provider": "Google",
+      "family": "gemini",
+      "model_name": "gemini-2.0-flash",
+      "display_name": "Gemini 2.0 Flash",
+      "model_version": "2.0",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Google Gemini 2.0 Flash."
+    },
+    {
+      "provider": "Anthropic",
+      "family": "claude",
+      "model_name": "claude-opus-4",
+      "display_name": "Claude Opus 4",
+      "model_version": "4",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Anthropic Claude Opus 4."
+    },
+    {
+      "provider": "Anthropic",
+      "family": "claude",
+      "model_name": "claude-sonnet-4",
+      "display_name": "Claude Sonnet 4",
+      "model_version": "4",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Anthropic Claude Sonnet 4."
+    },
+    {
+      "provider": "Anthropic",
+      "family": "claude",
+      "model_name": "claude-3-5-haiku",
+      "display_name": "Claude 3.5 Haiku",
+      "model_version": "3.5",
+      "hosting_type": "EXTERNAL_API",
+      "description": "Anthropic Claude 3.5 Haiku."
+    },
+    {
+      "provider": "OpenAI",
+      "family": "gpt",
+      "model_name": "gpt-4.1",
+      "display_name": "GPT-4.1",
+      "model_version": "4.1",
+      "hosting_type": "EXTERNAL_API",
+      "description": "OpenAI GPT-4.1."
+    },
+    {
+      "provider": "OpenAI",
+      "family": "gpt",
+      "model_name": "gpt-4o",
+      "display_name": "GPT-4o",
+      "model_version": "4o",
+      "hosting_type": "EXTERNAL_API",
+      "description": "OpenAI GPT-4o."
+    },
+    {
+      "provider": "OpenAI",
+      "family": "gpt",
+      "model_name": "gpt-4o-mini",
+      "display_name": "GPT-4o mini",
+      "model_version": "4o-mini",
+      "hosting_type": "EXTERNAL_API",
+      "description": "OpenAI GPT-4o mini."
+    }
+  ]
+}

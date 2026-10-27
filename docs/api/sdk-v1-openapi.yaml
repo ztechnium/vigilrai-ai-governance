@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: RAI Control Plane Public SDK API
+  version: "1.0.0"
+  description: |
+    Stable external integration contract (`/sdk/v1`).
+    Does not expose WP1–WP9 internal module boundaries.
+servers:
+  - url: /
+paths:
+  /sdk/v1/health:
+    get:
+      summary: SDK health
+      operationId: sdkHealth
+      responses:
+        "200":
+          description: OK
+  /sdk/v1/heartbeat:
+    post:
+      summary: Integration heartbeat
+      operationId: sdkHeartbeat
+      security:
+        - RaiAgentKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeartbeatRequest"
+      responses:
+        "200":
+          description: OK
+  /sdk/v1/sessions:
+    post:
+      summary: Start session
+      operationId: startSession
+      security:
+        - RaiAgentKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartSessionRequest"
+            example:
+              integration_id: "00000000-0000-0000-0000-000000000001"
+              external_session_id: "sess-1"
+              channel: "sales-ai"
+      responses:
+        "200":
+          description: Session created
+  /sdk/v1/sessions/{session_id}/input:
+    post:
+      summary: Observe input
+      operationId: observeInput
+      security:
+        - RaiAgentKey: []
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObserveInputRequest"
+      responses:
+        "200":
+          description: Observation result
+  /sdk/v1/sessions/{session_id}/actions/authorize:
+    post:
+      summary: Authorize consequential action (call before side effects)
+      operationId: authorizeAction
+      security:
+        - RaiAgentKey: []
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+        - name: Idempotency-Key
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorizeActionRequest"
+            example:
+              tool: create_order
+              parameters:
+                amount: 100
+                currency: USD
+              idempotency_key: "ord-1"
+      responses:
+        "200":
+          description: Decision
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicDecision"
+  /sdk/v1/actions/{decision_id}/execution:
+    post:
+      summary: Report execution result (idempotent)
+      operationId: reportExecution
+      security:
+        - RaiAgentKey: []
+      parameters:
+        - name: decision_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportExecutionRequest"
+      responses:
+        "200":
+          description: Accepted
+  /sdk/v1/sessions/{session_id}/output:
+    post:
+      summary: Observe output
+      operationId: observeOutput
+      security:
+        - RaiAgentKey: []
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObserveOutputRequest"
+      responses:
+        "200":
+          description: OK
+  /sdk/v1/sessions/{session_id}/end:
+    post:
+      summary: End session (idempotent)
+      operationId: endSession
+      security:
+        - RaiAgentKey: []
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+      responses:
+        "200":
+          description: Ended
+components:
+  securitySchemes:
+    RaiAgentKey:
+      type: apiKey
+      in: header
+      name: X-RAI-Agent-Key
+      description: WP2 runtime API key (Bearer also accepted). OIDC/mTLS seams available.
+  parameters:
+    SessionId:
+      name: session_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    HeartbeatRequest:
+      type: object
+      required: [integration_id]
+      properties:
+        integration_id:
+          type: string
+          format: uuid
+        sdk_version:
+          type: string
+        protocol_version:
+          type: integer
+        capability_matrix:
+          type: object
+          additionalProperties:
+            type: boolean
+    StartSessionRequest:
+      type: object
+      required: [integration_id]
+      properties:
+        integration_id:
+          type: string
+          format: uuid
+        external_session_id:
+          type: string
+        external_conversation_id:
+          type: string
+        principal:
+          type: string
+        channel:
+          type: string
+        metadata:
+          type: object
+    ObserveInputRequest:
+      type: object
+      properties:
+        content:
+          type: string
+        content_type:
+          type: string
+          default: text
+        observed_model:
+          type: string
+        principal:
+          type: object
+        metadata:
+          type: object
+    AuthorizeActionRequest:
+      type: object
+      properties:
+        tool:
+          type: string
+        tool_id:
+          type: string
+          format: uuid
+        target:
+          type: object
+        parameters:
+          type: object
+        amount:
+          type: number
+        currency:
+          type: string
+        idempotency_key:
+          type: string
+        metadata:
+          type: object
+        approval_request_id:
+          type: string
+          format: uuid
+    ReportExecutionRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+        external_execution_id:
+          type: string
+        result_metadata:
+          type: object
+        error_metadata:
+          type: object
+        usage:
+          type: object
+        cost:
+          type: object
+    ObserveOutputRequest:
+      type: object
+      properties:
+        content:
+          type: string
+        content_type:
+          type: string
+        observed_model:
+          type: string
+        metadata:
+          type: object
+    PublicDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [ALLOW, DENY, REQUIRE_APPROVAL, MONITOR, UNAVAILABLE]
+        decision_id:
+          type: string
+        reason_code:
+          type: string
+        human_message:
+          type: string
+        machine_reason:
+          type: string
+        approval_request_id:
+          type: string
+        enforcement_receipt_id:
+          type: string
+        retryable:
+          type: boolean
+        allowed:
+          type: boolean
+    SdkError:
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+            - AUTHENTICATION_FAILED
+            - TENANT_SUSPENDED
+            - RUNTIME_IDENTITY_INACTIVE
+            - AGENT_VERSION_INELIGIBLE
+            - RESOURCE_OUT_OF_SCOPE
+            - POLICY_DENIED
+            - APPROVAL_REQUIRED
+            - BUDGET_EXCEEDED
+            - RUNTIME_SUSPENDED
+            - CONTENT_DENIED
+            - ASSURANCE_INVALID
+            - RATE_LIMITED
+            - RAI_UNAVAILABLE
+            - INVALID_REQUEST
+        message:
+          type: string
+        retryable:
+          type: boolean
+        correlation_id:
+          type: string

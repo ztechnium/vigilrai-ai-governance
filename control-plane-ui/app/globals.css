@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --base-900: #0b1014;
+  --base-800: #12181f;
+  --base-700: #1a222c;
+  --base-300: #cdd3dd;
+  --base-200: #e3e7ee;
+  --base-100: #f3f5f9;
+  --base-50: #f8fafc;
+  --ink-900: #0d0f12;
+  --ink-800: #1a1f26;
+  --ink-700: #2a3138;
+  --ink-600: #3d4650;
+  --ink-500: #525c66;
+  --ink-400: #6b7682;
+  --ink-300: #8c97a3;
+  --accent-700: #17665c;
+  --accent-600: #1f7a6d;
+  --accent-500: #2b9d8b;
+  --accent-200: #b7e4db;
+  --accent-100: #e5f6f2;
+  --accent-50: #f2fbf9;
+  --warn-700: #92400e;
+  --warn-600: #b45309;
+  --warn-100: #fff4e5;
+  --warn-50: #fffbeb;
+  --danger-700: #991b1b;
+  --danger-600: #b91c1c;
+  --danger-500: #dc2626;
+  --danger-200: #fecaca;
+  --danger-100: #fdecec;
+  --danger-50: #fef2f2;
+}
+
+/* VigilRAI security console. Public pages keep the light :root palette. */
+.console {
+  color-scheme: dark;
+  font-size: 14px;
+  background-color: var(--base-100);
+  background-image: none;
+  color: var(--ink-900);
+  --base-900: oklch(0.13 0.02 252);
+  --base-800: oklch(0.17 0.023 251);
+  --base-700: oklch(0.22 0.034 252);
+  --base-300: oklch(0.45 0.04 250);
+  --base-200: oklch(0.32 0.035 250);
+  --base-100: oklch(0.16 0.022 252);
+  --base-50: oklch(0.205 0.026 251);
+  --ink-900: oklch(0.97 0.008 250);
+  --ink-800: oklch(0.92 0.012 250);
+  --ink-700: oklch(0.86 0.02 249);
+  --ink-600: oklch(0.78 0.025 250);
+  --ink-500: oklch(0.68 0.035 250);
+  --ink-400: oklch(0.62 0.032 250);
+  --ink-300: oklch(0.55 0.03 250);
+  --accent-700: oklch(0.78 0.14 257);
+  --accent-600: oklch(0.65 0.19 257);
+  --accent-500: oklch(0.72 0.16 257);
+  --accent-200: oklch(0.42 0.08 257);
+  --accent-100: oklch(0.32 0.06 257);
+  --accent-50: oklch(0.26 0.045 257);
+  --warn-700: oklch(0.84 0.14 70);
+  --warn-600: oklch(0.77 0.17 70);
+  --warn-100: oklch(0.32 0.06 70);
+  --warn-50: oklch(0.26 0.045 70);
+  --danger-700: oklch(0.78 0.16 25);
+  --danger-600: oklch(0.7 0.2 25);
+  --danger-500: oklch(0.63 0.24 25);
+  --danger-200: oklch(0.42 0.1 25);
+  --danger-100: oklch(0.32 0.08 25);
+  --danger-50: oklch(0.26 0.05 25);
+}
+
+.console ::selection {
+  background: color-mix(in oklab, var(--accent-600) 35%, transparent);
+}
+
+.console :focus-visible {
+  outline: 2px solid var(--accent-600);
+  outline-offset: 2px;
+}
+
+body {
+  @apply bg-base-100 text-ink-900;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(43, 157, 139, 0.08), transparent 40%),
+    radial-gradient(circle at 90% 20%, rgba(17, 97, 85, 0.06), transparent 35%),
+    linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose-docs h2 {
+  @apply mt-10 text-xl font-semibold text-ink-900;
+}
+
+.prose-docs h3 {
+  @apply mt-6 text-base font-semibold text-ink-900;
+}
+
+.prose-docs p {
+  @apply mt-3 text-sm leading-relaxed text-ink-600;
+}
+
+.prose-docs ul,
+.prose-docs ol {
+  @apply mt-3 list-disc space-y-2 pl-5 text-sm text-ink-600;
+}
+
+.prose-docs pre {
+  @apply mt-4 overflow-x-auto rounded-lg bg-base-900 p-4 text-sm text-base-100;
+}
+
+.prose-docs code {
+  @apply rounded bg-base-100 px-1.5 py-0.5 text-sm text-accent-600;
+}
+
+.prose-docs pre code {
+  @apply bg-transparent p-0 text-base-100;
+}
+
+.prose-docs a {
+  @apply font-semibold text-accent-600 hover:text-accent-500;
+}
+
+.prose-docs table {
+  @apply mt-4 w-full text-sm;
+}
+
+.prose-docs th {
+  @apply border-b border-base-200 px-3 py-2 text-left font-semibold text-ink-900;
+}
+
+.prose-docs td {
+  @apply border-b border-base-200 px-3 py-2 text-ink-600;
+}
+
+.prose-docs strong {
+  @apply font-semibold text-ink-900;
+}

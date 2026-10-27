@@ -1,0 +1,196 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+  TEST_DATABASE_URL: postgresql://rai_user:rai_password@localhost:5432/rai_gateway_test
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: rai_gateway_test
+          POSTGRES_USER: rai_user
+          POSTGRES_PASSWORD: rai_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rai_user -d rai_gateway_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install backend dependencies
+        run: uv sync --extra dev
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+
+      - name: mypy
+        run: uv run mypy src/rai_gateway/core/health.py src/rai_gateway/core/version_info.py src/rai_gateway/core/database.py
+
+      - name: Migration test (empty DB → head)
+        run: uv run pytest tests/db/test_migrations.py -q
+        env:
+          TEST_DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+
+      - name: Backend tests
+        run: uv run pytest tests/ -q --cov=rai_gateway --cov-report=term-missing
+        env:
+          TEST_DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+
+      - name: Build backend image
+        run: docker build -t rai-gateway:${{ github.sha }} .
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: control-plane-ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: control-plane-ui/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: ESLint
+        run: pnpm run lint
+
+      - name: Prettier check
+        run: pnpm run format:check
+
+      - name: TypeScript check
+        run: pnpm run typecheck
+
+      - name: Vitest unit tests
+        run: pnpm run test:unit
+
+      - name: Production build
+        run: pnpm run build
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Playwright smoke test
+        run: pnpm run test:e2e
+
+  python-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/python-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+      - name: Install SDK with dev extras
+        run: uv sync --extra dev
+      - name: Unit tests
+        run: uv run pytest -q
+      - name: Build and twine check
+        run: |
+          uv run python -m build
+          uv run twine check dist/*
+
+  typescript-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/typescript-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install
+        run: npm install
+      - name: Test
+        run: npm test
+      - name: Pack dry-run
+        run: npm pack --dry-run
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install backend dependencies
+        run: uv sync --extra dev
+
+      - name: Python dependency audit
+        run: uv run pip-audit --ignore-vuln PYSEC-2026-1325
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: control-plane-ui/pnpm-lock.yaml
+
+      - name: Frontend dependency audit
+        working-directory: control-plane-ui
+        run: pnpm audit --audit-level high
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Semgrep SAST
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/default
+
+      - name: Build and scan backend image
+        run: |
+          docker build -t rai-gateway:scan .
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image --severity HIGH,CRITICAL rai-gateway:scan

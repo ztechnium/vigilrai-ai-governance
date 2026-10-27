@@ -1,0 +1,35 @@
+{
+  "INVALID_REQUEST": {
+    "http": 400
+  },
+  "UNAUTHENTICATED": {
+    "http": 401
+  },
+  "NOT_ALLOWED": {
+    "http": 403
+  },
+  "PROMPT_NOT_FOUND": {
+    "http": 404
+  },
+  "PROMPT_VERSION_NOT_APPROVED": {
+    "http": 409
+  },
+  "INPUT_BLOCKED": {
+    "http": 422
+  },
+  "OUTPUT_BLOCKED": {
+    "http": 422
+  },
+  "CATALOG_UNAVAILABLE": {
+    "http": 503
+  },
+  "GUARD_UNAVAILABLE": {
+    "http": 503
+  },
+  "LLM_TIMEOUT": {
+    "http": 504
+  },
+  "EXECUTION_FAILED": {
+    "http": 500
+  }
+}

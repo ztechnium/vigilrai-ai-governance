@@ -1,0 +1,182 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: rai_gateway
+      POSTGRES_USER: rai_user
+      POSTGRES_PASSWORD: rai_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rai_user -d rai_gateway"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  rai-gateway:
+    build: .
+    ports:
+      - "8001:8000"
+    # Pass through host `.env` (see `.env.production.example` for the full set).
+    # Explicit `environment` keys below override env_file (Docker network URLs, etc.).
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql://rai_user:rai_password@postgres:5432/rai_gateway
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      # Phase 21 — environment mode (use production only with strong secrets)
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-me}
+      - REQUIRE_STEP_UP=${REQUIRE_STEP_UP:-true}
+      - STEP_UP_TOKEN=${STEP_UP_TOKEN:-change-me-step-up}
+      - ALLOW_SHARED_SECRET_STEP_UP=${ALLOW_SHARED_SECRET_STEP_UP:-true}
+      - REQUIRE_API_KEY=${REQUIRE_API_KEY:-true}
+      - ENABLE_CACHE=${ENABLE_CACHE:-true}
+      - ENABLE_CASES=${ENABLE_CASES:-true}
+      - ENABLE_RAG=${ENABLE_RAG:-false}
+      - ENABLE_JUDGE=${ENABLE_JUDGE:-false}
+      - ENABLE_XAI=${ENABLE_XAI:-true}
+      - ENABLE_ETHICS_EVAL=${ENABLE_ETHICS_EVAL:-true}
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - LLM_PROVIDER_URL=${LLM_PROVIDER_URL:-https://api.openai.com/v1}
+      - LLM_PROVIDER_MODEL=${LLM_PROVIDER_MODEL:-gpt-3.5-turbo}
+      - LLM_PROVIDER_API_KEY=${LLM_PROVIDER_API_KEY:-}
+      - OLLAMA_ENDPOINT=${OLLAMA_ENDPOINT:-http://localhost:11434}
+      # Secrets & bootstrap (Phases 0 / 21 / 22)
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-only-change-me}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - EVIDENCE_ENCRYPTION_KEY=${EVIDENCE_ENCRYPTION_KEY:-dev-only-encryption-key}
+      - ADMIN_BOOTSTRAP_ENABLED=${ADMIN_BOOTSTRAP_ENABLED:-true}
+      - ADMIN_BOOTSTRAP_EMAIL=${ADMIN_BOOTSTRAP_EMAIL:-admin@raigateway.local}
+      - ADMIN_BOOTSTRAP_PASSWORD=${ADMIN_BOOTSTRAP_PASSWORD:-ChangeMe123!}
+      - ADMIN_BOOTSTRAP_NAME=${ADMIN_BOOTSTRAP_NAME:-General Admin}
+      - ADMIN_BOOTSTRAP_ROLE=${ADMIN_BOOTSTRAP_ROLE:-admin}
+      - ADMIN_SESSION_MINUTES=${ADMIN_SESSION_MINUTES:-480}
+      # Phase 23 — CORS
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS:-true}
+      - CORS_ALLOW_METHODS=${CORS_ALLOW_METHODS:-GET,POST,PUT,DELETE,OPTIONS,PATCH}
+      - CORS_ALLOW_HEADERS=${CORS_ALLOW_HEADERS:-Content-Type,Authorization,X-Organization-ID,X-CSRF-Token,X-Admin-Token,X-RAI-Agent-Key}
+      - CORS_MAX_AGE=${CORS_MAX_AGE:-600}
+      # Phase 20 — browser session / cookies
+      - APP_PUBLIC_URL=${APP_PUBLIC_URL:-http://localhost:3000}
+      - AUTH_SET_COOKIES=${AUTH_SET_COOKIES:-false}
+      - AUTH_COOKIE_SECURE=${AUTH_COOKIE_SECURE:-false}
+      - AUTH_COOKIE_SAMESITE=${AUTH_COOKIE_SAMESITE:-lax}
+      - AUTH_ACCESS_COOKIE_NAME=${AUTH_ACCESS_COOKIE_NAME:-rai_access}
+      - AUTH_REFRESH_COOKIE_NAME=${AUTH_REFRESH_COOKIE_NAME:-rai_refresh}
+      - AUTH_ACCESS_TOKEN_MINUTES=${AUTH_ACCESS_TOKEN_MINUTES:-480}
+      - AUTH_REFRESH_TOKEN_DAYS=${AUTH_REFRESH_TOKEN_DAYS:-30}
+      # Phase 21 — mTLS & MCP adapter security
+      - MTLS_TRUSTED_PROXY_MODE=${MTLS_TRUSTED_PROXY_MODE:-false}
+      - MTLS_TRUSTED_PROXY_SECRET=${MTLS_TRUSTED_PROXY_SECRET:-}
+      - MTLS_ALLOW_INSECURE_IDENTITY_HEADER=${MTLS_ALLOW_INSECURE_IDENTITY_HEADER:-false}
+      - MCP_ADAPTER_MODE=${MCP_ADAPTER_MODE:-DEMO_SIMULATED}
+      - MCP_ALLOWED_HOSTS=${MCP_ALLOWED_HOSTS:-}
+      - MCP_ALLOW_PRIVATE_HOSTS=${MCP_ALLOW_PRIVATE_HOSTS:-true}
+      - MCP_ALLOW_HTTP=${MCP_ALLOW_HTTP:-true}
+      # Step-up / enterprise IdP (optional)
+      - APPROVAL_MINIMUM_ACR=${APPROVAL_MINIMUM_ACR:-}
+      - APPROVAL_REQUIRED_AMR=${APPROVAL_REQUIRED_AMR:-}
+      - APPROVAL_MAX_AUTH_AGE_SECONDS=${APPROVAL_MAX_AUTH_AGE_SECONDS:-}
+      - ADMIN_OIDC_ISSUER=${ADMIN_OIDC_ISSUER:-}
+      - ADMIN_OIDC_AUDIENCE=${ADMIN_OIDC_AUDIENCE:-}
+      - ADMIN_OIDC_JWKS_URL=${ADMIN_OIDC_JWKS_URL:-}
+      - ADMIN_OIDC_EMAIL_CLAIM=${ADMIN_OIDC_EMAIL_CLAIM:-email}
+      # Transactional email (values from host .env via ${...})
+      - EMAIL_ENABLED=${EMAIL_ENABLED:-false}
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-resend}
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME:-RAI Control Plane}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS:-}
+      - EMAIL_REPLY_TO=${EMAIL_REPLY_TO:-}
+      - SMTP_HOST=${SMTP_HOST:-smtp.resend.com}
+      - SMTP_PORT=${SMTP_PORT:-465}
+      - SMTP_USERNAME=${SMTP_USERNAME:-resend}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_USE_SSL=${SMTP_USE_SSL:-true}
+      - SMTP_USE_STARTTLS=${SMTP_USE_STARTTLS:-false}
+      - SMTP_TIMEOUT_SECONDS=${SMTP_TIMEOUT_SECONDS:-15.0}
+      - EMAIL_VERIFICATION_TTL_MINUTES=${EMAIL_VERIFICATION_TTL_MINUTES:-60}
+      - PASSWORD_RESET_TTL_MINUTES=${PASSWORD_RESET_TTL_MINUTES:-30}
+      - EMAIL_DOCS_URL=${EMAIL_DOCS_URL:-https://docs.rai.example.com}
+      # Evidence / productization
+      - EVIDENCE_USE_DEMO_CONTENT_DEFAULTS=${EVIDENCE_USE_DEMO_CONTENT_DEFAULTS:-true}
+      - EVIDENCE_PROMPT_HANDLING_MODE=${EVIDENCE_PROMPT_HANDLING_MODE:-}
+      - EVIDENCE_MODEL_REQUEST_HANDLING_MODE=${EVIDENCE_MODEL_REQUEST_HANDLING_MODE:-}
+      - EVIDENCE_MODEL_RESPONSE_HANDLING_MODE=${EVIDENCE_MODEL_RESPONSE_HANDLING_MODE:-}
+      - EVIDENCE_AGENT_OUTPUT_HANDLING_MODE=${EVIDENCE_AGENT_OUTPUT_HANDLING_MODE:-}
+      - EVIDENCE_TOOL_PARAMETERS_HANDLING_MODE=${EVIDENCE_TOOL_PARAMETERS_HANDLING_MODE:-}
+      - EVIDENCE_TOOL_RESULT_HANDLING_MODE=${EVIDENCE_TOOL_RESULT_HANDLING_MODE:-}
+      - FAIL_CLOSED_ON_RAI_UNAVAILABLE=${FAIL_CLOSED_ON_RAI_UNAVAILABLE:-true}
+      - SDK_RATE_LIMIT_PER_MINUTE=${SDK_RATE_LIMIT_PER_MINUTE:-600}
+      - SDK_AUTH_FAILURE_LIMIT_PER_MINUTE=${SDK_AUTH_FAILURE_LIMIT_PER_MINUTE:-30}
+      - OBJECT_STORAGE_BACKEND=${OBJECT_STORAGE_BACKEND:-postgres}
+      - OBJECT_STORAGE_BUCKET=${OBJECT_STORAGE_BUCKET:-}
+      - OBJECT_STORAGE_ENDPOINT=${OBJECT_STORAGE_ENDPOINT:-}
+      - OIDC_JWKS_URL=${OIDC_JWKS_URL:-}
+      - CACHE_TTL_SECONDS=${CACHE_TTL_SECONDS:-3600}
+      - DATABASE_POOL_SIZE=${DATABASE_POOL_SIZE:-20}
+      - DATABASE_MAX_OVERFLOW=${DATABASE_MAX_OVERFLOW:-30}
+      - OTEL_ENDPOINT=${OTEL_ENDPOINT:-}
+      - SIEM_ENDPOINT=${SIEM_ENDPOINT:-}
+      - DATA_CLASSIFICATION_URL=${DATA_CLASSIFICATION_URL:-}
+      # Optional multi-provider LLM keys
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT:-}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-02-15-preview}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-}
+      - GCP_LOCATION=${GCP_LOCATION:-us-central1}
+      # Build metadata (optional)
+      - GIT_COMMIT_SHA=${GIT_COMMIT_SHA:-}
+      - BUILD_TIME=${BUILD_TIME:-}
+      - SCHEMA_REVISION=${SCHEMA_REVISION:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  control-plane-ui:
+    build:
+      context: ./control-plane-ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8001}
+        NEXT_PUBLIC_ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8001}
+      - NEXT_PUBLIC_ADMIN_TOKEN=${ADMIN_TOKEN:-change-me}
+    depends_on:
+      rai-gateway:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

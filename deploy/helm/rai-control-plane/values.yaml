@@ -1,0 +1,54 @@
+# VigilRAI Community Edition on Kubernetes, powered by Ztechnium.
+# One API process. It does not create organizations.
+# Put DATABASE_URL in the secret named by postgresql.existingSecret.
+
+replicaCount: 2
+
+image:
+  repository: rai-gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 2
+    memory: 2Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+postgresql:
+  # External managed Postgres recommended for production
+  existingSecret: rai-db
+  urlKey: DATABASE_URL
+
+objectStorage:
+  backend: postgres # postgres | s3 | minio
+  bucket: ""
+  endpoint: ""
+
+oidc:
+  jwksUrl: ""
+
+rateLimits:
+  sdkPerMinute: 600
+
+env:
+  LOG_LEVEL: INFO
+  FAIL_CLOSED_ON_RAI_UNAVAILABLE: "true"
+
+ingress:
+  enabled: false
+  className: ""
+  hosts: []
+  tls: []

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+.next-*/
+out/
+
+# Yarn artifacts
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+
+# pnpm content-addressable store (never commit)
+.pnpm-store/
+
+# Local env files
+.env.local
+.env*.local
+
+# Test / tooling artifacts
+test-results/
+playwright-report/
+coverage/

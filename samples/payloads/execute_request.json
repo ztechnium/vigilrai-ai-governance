@@ -1,0 +1,10 @@
+{
+  "prompt_id": "demo_prompt",
+  "prompt_version": 1,
+  "system_id": "test_system",
+  "module": "test_module",
+  "variables": {
+    "name": "Alice"
+  },
+  "objective": "Generate greeting for user"
+}

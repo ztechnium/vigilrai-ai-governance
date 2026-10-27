@@ -1,0 +1,8 @@
+{
+  "obligation_id": "GDPR-ART-6-LEGAL-BASIS",
+  "doc_id": "GDPR-2021-001",
+  "section_ref": "Article 6",
+  "topic": "Legal Basis for Processing",
+  "scope": "All data processing must have a legal basis (consent, contract, legal obligation, vital interests, public task, or legitimate interests)",
+  "constraint_action": "LOG_PROCESSING_BASIS"
+}

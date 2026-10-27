@@ -1,0 +1,9 @@
+{
+  "rule_id": "TOXICITY_FILTER_V1",
+  "name": "Toxicity Detection",
+  "description": "Flag and block toxic content in prompts and outputs",
+  "detector_type": "perspective_api",
+  "severity": "HIGH",
+  "threshold": 0.8,
+  "action_on_violation": "BLOCK"
+}

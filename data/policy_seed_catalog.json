@@ -1,0 +1,100 @@
+{
+  "version": "2026-10-26",
+  "source_type": "SEEDED_STANDARD",
+  "policies": [
+    {
+      "source_key": "pii",
+      "title": "Personal data (PII)",
+      "authority": "RAI standard",
+      "jurisdiction": "Global",
+      "policy_type": "PRIVACY",
+      "version": "1.0",
+      "content_text": "Agents must not collect, repeat, or disclose personal data that is not required for the customer's request. Personal data includes national identifiers, payment credentials, bank account numbers, and authentication secrets. When a reply would reveal or request that data, the reply must be blocked.",
+      "obligations": [
+        {
+          "section_ref": "pii-1",
+          "topic": "national_identifier",
+          "text": "Do not ask for or disclose a national identifier, passport number, or government ID.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "BOTH",
+            "category": "PRIVACY",
+            "severity": "CRITICAL",
+            "effect": "DENY"
+          }
+        },
+        {
+          "section_ref": "pii-2",
+          "topic": "bank_account",
+          "text": "Do not disclose a customer bank account, IBAN, or routing number.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "OUTPUT",
+            "category": "PRIVACY",
+            "severity": "CRITICAL",
+            "effect": "DENY"
+          }
+        },
+        {
+          "section_ref": "pii-3",
+          "topic": "payment_secret",
+          "text": "Do not ask the customer for a card security code, PIN, or full payment card number.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "OUTPUT",
+            "category": "PRIVACY",
+            "severity": "CRITICAL",
+            "effect": "DENY"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "gdpr",
+      "title": "GDPR personal data",
+      "authority": "GDPR",
+      "jurisdiction": "EU",
+      "policy_type": "PRIVACY",
+      "version": "1.0",
+      "content_text": "Personal data is processed only for the stated purpose, limited to what that purpose needs, and is not disclosed in an agent reply. Special-category data is not requested or repeated. A reply that goes beyond the customer's request is blocked.",
+      "obligations": [
+        {
+          "section_ref": "gdpr-5-1-c",
+          "topic": "data_minimisation",
+          "text": "Do not ask the customer for personal data that is not needed to complete their request.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "OUTPUT",
+            "category": "PRIVACY",
+            "severity": "HIGH",
+            "effect": "DENY"
+          }
+        },
+        {
+          "section_ref": "gdpr-9",
+          "topic": "special_category",
+          "text": "Do not request or disclose special-category data such as health, religion, or biometric information.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "BOTH",
+            "category": "PRIVACY",
+            "severity": "CRITICAL",
+            "effect": "DENY"
+          }
+        },
+        {
+          "section_ref": "gdpr-5-1-f",
+          "topic": "disclosure",
+          "text": "Do not include a customer's personal data in a reply unless that data is required to answer the request.",
+          "structured": {
+            "rule_kind": "CONTENT",
+            "applies_to": "OUTPUT",
+            "category": "PRIVACY",
+            "severity": "HIGH",
+            "effect": "DENY"
+          }
+        }
+      ]
+    }
+  ]
+}

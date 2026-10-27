@@ -1,0 +1,45 @@
+# DEPRECATED for publishing: use github.com/ztechnium/rai-typescript-sdk
+#
+# This workflow only validates the temporary monorepo mirror under
+# packages/typescript-sdk. Public releases are tagged v* and published from
+# ztechnium/rai-typescript-sdk.
+name: TypeScript SDK (mirror)
+
+on:
+  pull_request:
+    paths:
+      - "packages/typescript-sdk/**"
+      - ".github/workflows/typescript-sdk-publish.yml"
+
+concurrency:
+  group: typescript-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/typescript-sdk
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["18", "20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Validate package contents
+        run: npm pack --dry-run

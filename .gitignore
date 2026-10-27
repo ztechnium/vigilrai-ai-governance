@@ -1,0 +1,80 @@
+# .gitignore for RAI Gateway
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.env
+venv-rai/
+venv*/
+.venv/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Database
+*.db
+
+# Docker
+postgres_data/
+redis_data/
+
+# Alembic — versions/ is committed; only autogenerate scratch files are ignored
+alembic/versions/__pycache__/
+
+# Coverage
+.coverage
+coverage.xml
+
+# Test outputs
+*.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.bak
+*.swp
+
+# Developer lab runtime credentials and workspace side effects
+examples/developer_lab/.rai-lab.json
+examples/developer_lab/state/
+
+# Ignore secrets (keep .env.example committed)
+.env
+.env.local
+.env.*.local
+
+# Local Compose overlay that points at an already running Postgres
+docker-compose.existing-db.yml
+
+# Next.js / UI build artifacts
+control-plane-ui/.next/
+control-plane-ui/out/
+
+# Yarn PnP artifacts
+control-plane-ui/.pnp.cjs
+control-plane-ui/.pnp.loader.mjs
+control-plane-ui/.yarn/
+control-plane-ui/.yarn/unplugged/
+control-plane-ui/.yarn/cache/
+control-plane-ui/.yarn/build-state.yml
+control-plane-ui/.yarn/install-state.gz
+
+# pnpm content-addressable store (never commit)
+.pnpm-store/
+**/.pnpm-store/
+
+# Node deps
+control-plane-ui/node_modules/
+node_modules/
+**/node_modules/
+
+# Tooling caches
+control-plane-ui/.turbo/

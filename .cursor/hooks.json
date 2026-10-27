@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeMCPExecution": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor beforeMCPExecution",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor beforeShellExecution",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor afterMCPExecution",
+        "timeout": 10
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor afterShellExecution",
+        "timeout": 10
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor beforeSubmitPrompt",
+        "timeout": 10
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor afterAgentResponse",
+        "timeout": 10
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": ".cursor/hooks/rai-hook cursor afterAgentThought",
+        "timeout": 10
+      }
+    ]
+  }
+}

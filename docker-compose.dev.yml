@@ -1,0 +1,48 @@
+# Development override for live code reload.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# (or: make dev)
+
+services:
+  rai-gateway:
+    volumes:
+      - ./src:/app/src:rw
+      - ./tests:/app/tests:rw
+      - ./scripts:/app/scripts:rw
+      - ./alembic:/app/alembic:rw
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn rai_gateway.main:app --host 0.0.0.0 --port 8000 --app-dir src --reload"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-me}
+      - REQUIRE_STEP_UP=${REQUIRE_STEP_UP:-true}
+      - STEP_UP_TOKEN=${STEP_UP_TOKEN:-change-me-step-up}
+      - ALLOW_SHARED_SECRET_STEP_UP=${ALLOW_SHARED_SECRET_STEP_UP:-true}
+      - REQUIRE_API_KEY=true
+      - ENABLE_CACHE=true
+      - ENABLE_CASES=true
+      - ENABLE_RAG=false
+      - ENABLE_XAI=true
+      - ENABLE_ETHICS_EVAL=true
+
+  # Skip production Dockerfile build; run next dev against the bind-mounted source.
+  control-plane-ui:
+    build: !reset null
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./control-plane-ui:/app:rw
+      - control_plane_ui_node_modules:/app/node_modules
+    command: >
+      sh -c "corepack enable && corepack prepare pnpm@9.15.0 --activate &&
+      pnpm install && pnpm exec next dev -H 0.0.0.0 -p 3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8001
+      - NEXT_PUBLIC_ADMIN_TOKEN=${ADMIN_TOKEN:-change-me}
+    depends_on:
+      rai-gateway:
+        condition: service_healthy
+
+volumes:
+  control_plane_ui_node_modules:

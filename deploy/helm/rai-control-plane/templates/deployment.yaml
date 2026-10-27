@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rai-control-plane.fullname" . }}
+  labels:
+    app.kubernetes.io/name: rai-control-plane
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rai-control-plane
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rai-control-plane
+    spec:
+      containers:
+        - name: rai-gateway
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: LOG_LEVEL
+              value: {{ .Values.env.LOG_LEVEL | quote }}
+            - name: FAIL_CLOSED_ON_RAI_UNAVAILABLE
+              value: {{ .Values.env.FAIL_CLOSED_ON_RAI_UNAVAILABLE | quote }}
+            - name: SDK_RATE_LIMIT_PER_MINUTE
+              value: {{ .Values.rateLimits.sdkPerMinute | quote }}
+            - name: OBJECT_STORAGE_BACKEND
+              value: {{ .Values.objectStorage.backend | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.existingSecret }}
+                  key: {{ .Values.postgresql.urlKey }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rai-control-plane.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app.kubernetes.io/name: rai-control-plane
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      name: http

@@ -1,0 +1,9 @@
+{
+  "rule_id": "HALLUCINATION_CHECK_V1",
+  "name": "Hallucination Detection",
+  "description": "Detect if LLM generates false or misleading information",
+  "detector_type": "fact_checker",
+  "severity": "MEDIUM",
+  "threshold": 0.5,
+  "action_on_violation": "LOG"
+}

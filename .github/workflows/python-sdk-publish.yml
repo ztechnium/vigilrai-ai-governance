@@ -1,0 +1,46 @@
+# DEPRECATED for publishing: use github.com/ztechnium/rai-python-sdk
+#
+# This workflow only validates the temporary monorepo mirror under
+# packages/python-sdk. Public releases are tagged v* and published from
+# ztechnium/rai-python-sdk via OIDC Trusted Publishing.
+name: Python SDK (mirror)
+
+on:
+  pull_request:
+    paths:
+      - "packages/python-sdk/**"
+      - ".github/workflows/python-sdk-publish.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/python-sdk
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Build wheel and sdist
+        run: python -m build
+
+      - name: Validate distribution metadata
+        run: twine check dist/*
+
+      - name: Install wheel and smoke-import
+        run: |
+          pip install dist/*.whl
+          python -c "from rai_sdk import RAIClient"

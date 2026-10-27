@@ -1,0 +1,9 @@
+{
+  "rule_id": "BIAS_DETECTION_V1",
+  "name": "Bias Detection",
+  "description": "Detect fairness issues and potential biases in outputs",
+  "detector_type": "fairness_classifier",
+  "severity": "MEDIUM",
+  "threshold": 0.6,
+  "action_on_violation": "LOG"
+}

@@ -1,0 +1,9 @@
+{
+  "rule_id": "PII_REDACTION_V1",
+  "name": "PII Filtering",
+  "description": "Detect and redact personally identifiable information",
+  "detector_type": "regex_patterns",
+  "severity": "HIGH",
+  "threshold": 0.7,
+  "action_on_violation": "REDACT"
+}

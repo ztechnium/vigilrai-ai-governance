@@ -1,0 +1,113 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rai-gateway"
+version = "0.1.0"
+description = "VigilRAI Community Edition — single-organization AI governance, powered by Ztechnium"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+authors = [{ name = "ZTechnium", email = "opensource@ztechnium.com" }]
+keywords = ["rai", "responsible-ai", "governance", "agents", "control-plane"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "sqlalchemy>=2.0.23",
+    "alembic>=1.13.1",
+    "psycopg2-binary>=2.9.9",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "opentelemetry-api>=1.21.0",
+    "opentelemetry-sdk>=1.21.0",
+    "opentelemetry-instrumentation>=0.42b0",
+    "opentelemetry-instrumentation-fastapi>=0.42b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.42b0",
+    "opentelemetry-exporter-otlp>=1.21.0",
+    "redis>=5.0.1",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "argon2-cffi>=23.1.0",
+    "python-multipart>=0.0.6",
+    "httpx>=0.25.2",
+    "structlog>=23.2.0",
+    "openpyxl>=3.1.5",
+]
+
+[project.scripts]
+rai-hook = "rai_gateway.client_hooks.bridge:main"
+rai-worker = "rai_gateway.workers.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ztechnium/vigirai-ai-governance"
+Repository = "https://github.com/ztechnium/vigirai-ai-governance"
+Issues = "https://github.com/ztechnium/vigirai-ai-governance/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.8.0",
+    "mypy>=1.7.1",
+    "pip-audit>=2.7.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rai_gateway"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+src = ["src", "tests", "alembic"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+]
+ignore = [
+    "E501",  # line length handled by formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/**" = ["E402", "E722", "F841", "W291", "W293"]
+"alembic/versions/**" = ["W291", "W293"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["rai_gateway"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = [
+    "passlib.*",
+    "jose.*",
+    "opentelemetry.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
