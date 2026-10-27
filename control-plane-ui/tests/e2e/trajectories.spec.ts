@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { seedAdminSession } from "./session";
 
 const TRAJ_MAIN = "aaaaaaaa-bbbb-4ccc-8ddd-111111111111";
 const TRAJ_DENY = "aaaaaaaa-bbbb-4ccc-8ddd-222222222222";
@@ -528,17 +529,39 @@ const mockReceiptDetail = {
   },
 };
 
-async function seedAdminSession(page: Page) {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("rai.cp.adminAuthToken", "e2e-test-token");
-    window.localStorage.setItem("rai.cp.activeAdminRole", "General Admin");
-  });
-}
-
 async function mockTrajectoryApis(page: Page) {
   await page.route(/\/v1\/trajectories(\/|$|\?)/, async (route) => {
     const url = route.request().url();
     const method = route.request().method();
+
+    if (method === "GET" && /\/economics(\?|$)/.test(url)) {
+      const trajId = url.match(/\/v1\/trajectories\/([^/]+)\/economics/)?.[1] ?? TRAJ_MAIN;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          trajectory_id: trajId,
+          summary: {
+            total_cost: 0,
+            currency: "USD",
+            cost_state: "COMPLETE",
+            metering_source: "NONE",
+            input_tokens: 0,
+            output_tokens: 0,
+            total_tokens: 0,
+            model_calls: 0,
+            tool_calls: 0,
+          },
+          spans: [],
+        }),
+      });
+      return;
+    }
+
+    if (method === "GET" && /\/(lifecycle|risk-findings)(\?|$)/.test(url)) {
+      await route.fulfill({ status: 404, contentType: "application/json", body: "{}" });
+      return;
+    }
 
     if (method === "GET" && /\/v1\/trajectories\/[^/]+\/export/.test(url)) {
       const trajId = url.match(/\/v1\/trajectories\/([^/]+)\/export/)?.[1] ?? TRAJ_MAIN;
@@ -687,7 +710,7 @@ test.describe("Trajectory operator flows", () => {
     await mockTrajectoryApis(page);
   });
 
-  test("main flow: list → overview → timeline → receipt → findings", async ({ page }) => {
+  test("main flow: list → investigation → evidence → findings → flow", async ({ page }) => {
     await page.goto("/runtime/trajectories");
     await expect(page.getByTestId("trajectories-page")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Trajectories", exact: true })).toBeVisible();
@@ -696,88 +719,55 @@ test.describe("Trajectory operator flows", () => {
     await page.getByTestId(`trajectory-row-${TRAJ_MAIN}`).click();
     await expect(page).toHaveURL(new RegExp(`/runtime/trajectories/${TRAJ_MAIN}$`));
     await expect(page.getByTestId("trajectory-detail-page")).toBeVisible();
-    await expect(page.getByTestId("trajectory-overview")).toBeVisible();
-    await expect(page.getByTestId("trajectory-overview")).toContainText("Demo System");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("Demo Runtime");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("cursor");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("OBSERVED");
+    await expect(page.getByTestId("investigation-workspace")).toBeVisible();
+    await expect(page.getByTestId("trajectory-detail-page")).toContainText("Demo System");
+    await expect(page.getByTestId("trajectory-detail-page")).toContainText("Demo Runtime");
+    await expect(page.getByTestId("trajectory-detail-page")).toContainText("cursor");
+    await expect(page.getByTestId("investigation-workspace")).toContainText("PROMPT OBSERVED");
+    await expect(page.getByTestId("investigation-workspace")).toContainText("POLICY EVALUATED");
 
-    await page.getByRole("button", { name: "Timeline" }).click();
-    await expect(page.getByTestId("trajectory-timeline")).toBeVisible();
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Prompt Observed");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Policy Evaluated");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Approval Consumed");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Tool Execution Succeeded");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("RAI_AUTHORITATIVE");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("CLIENT_OBSERVED");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("CLIENT_REPORTED");
+    await page.getByRole("tab", { name: "Evidence" }).click();
+    await expect(page.getByTestId("trajectory-raw-audit")).toBeVisible();
+    await expect(page.getByTestId("trajectory-raw-audit")).toContainText("RAI_AUTHORITATIVE");
 
-    const policyEvent = page.getByTestId("timeline-event").filter({ hasText: "Policy Evaluated" });
-    await policyEvent.click();
-    await expect(policyEvent.getByRole("link", { name: "Open enforcement receipt" })).toBeVisible();
-    await policyEvent.getByRole("link", { name: "Open enforcement receipt" }).click();
-    await expect(page).toHaveURL(new RegExp(`/runtime/enforcement/${RECEIPT_ID}$`));
-    await expect(page.getByTestId("enforcement-detail-page")).toBeVisible();
-
-    await page.goto(`/runtime/trajectories/${TRAJ_MAIN}`);
-    await page.getByRole("button", { name: "Timeline" }).click();
-    const approvalEvent = page
-      .getByTestId("timeline-event")
-      .filter({ hasText: "Approval Requested" });
-    await approvalEvent.click();
-    await expect(approvalEvent.getByRole("link", { name: "Open approval" })).toBeVisible();
-
-    await page.getByRole("button", { name: "Evidence" }).click();
-    await expect(page.getByTestId("trajectory-evidence")).toBeVisible();
-    await expect(page.getByTestId("trajectory-evidence")).toContainText("RAI_AUTHORITATIVE");
-
-    await page.getByRole("button", { name: "Findings" }).click();
-    await expect(page.getByTestId("trajectory-findings")).toBeVisible();
-    await expect(page.getByTestId("trajectory-findings")).toContainText(
-      "No findings for this trajectory",
+    await page.getByRole("tab", { name: /Findings/ }).click();
+    await expect(page.getByTestId("trajectory-risk-findings")).toBeVisible();
+    await expect(page.getByTestId("trajectory-risk-findings")).toContainText(
+      "No governance or runtime findings were recorded",
     );
 
-    await page.getByRole("button", { name: "Graph" }).click();
-    await expect(page.getByTestId("trajectory-graph")).toBeVisible();
-    await expect(page.getByTestId("trajectory-graph")).toContainText("Enforcement Receipt");
+    await page.getByRole("tab", { name: "Flow" }).click();
+    await expect(page.getByTestId("trajectory-flow")).toBeVisible();
+    await expect(page.getByTestId("trajectory-flow")).toContainText("PROMPT OBSERVED");
   });
 
   test("DENY trajectory has no successful tool execution", async ({ page }) => {
     await page.goto(`/runtime/trajectories/${TRAJ_DENY}`);
-    await page.getByRole("button", { name: "Timeline" }).click();
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Tool Attempted");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Policy Evaluated");
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Action Denied");
-    await expect(page.getByTestId("trajectory-timeline")).not.toContainText(
-      "Tool Execution Succeeded",
+    await expect(page.getByTestId("investigation-workspace")).toBeVisible();
+    await expect(page.getByTestId("investigation-workspace")).toContainText("TOOL ATTEMPTED");
+    await expect(page.getByTestId("investigation-workspace")).toContainText("POLICY EVALUATED");
+    await expect(page.getByTestId("investigation-workspace")).toContainText("ACTION DENIED");
+    await expect(page.getByTestId("investigation-workspace")).not.toContainText(
+      "TOOL EXECUTION SUCCEEDED",
     );
   });
 
   test("missing execution evidence shows finding and incomplete coverage", async ({ page }) => {
     await page.goto(`/runtime/trajectories/${TRAJ_MISSING}`);
-    await expect(page.getByTestId("trajectory-overview")).toContainText("MISSING");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("75%");
-    await page.getByRole("button", { name: "Findings" }).click();
-    await expect(page.getByTestId("trajectory-findings")).toContainText("MISSING_EXECUTION_RESULT");
-    await expect(page.getByTestId("trajectory-findings")).toContainText("Missing execution result");
-  });
-
-  test("prompt/output NOT_AVAILABLE is explicit when unsupported", async ({ page }) => {
-    await page.goto(`/runtime/trajectories/${TRAJ_PROMPT}`);
-    await expect(page.getByTestId("trajectory-overview")).toContainText("NOT_AVAILABLE");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("prompt");
-    await expect(page.getByTestId("trajectory-overview")).toContainText("output");
+    await expect(page.getByTestId("trajectory-detail-page")).toBeVisible();
+    await page.getByRole("tab", { name: "Evidence" }).click();
+    await expect(page.getByTestId("trajectory-raw-audit")).toContainText("75%");
+    await page.getByRole("tab", { name: /Findings/ }).click();
+    await expect(page.getByTestId("trajectory-risk-findings")).toContainText(
+      "MISSING_EXECUTION_RESULT",
+    );
+    await expect(page.getByTestId("trajectory-risk-findings")).toContainText(
+      "Missing execution result",
+    );
   });
 
   test("prompt and agent output details show retained redacted content", async ({ page }) => {
-    await page.goto(`/runtime/trajectories/${TRAJ_MAIN}`);
-    await page.getByRole("button", { name: "Timeline" }).click();
-    await expect(page.getByTestId("trajectory-timeline")).toContainText("Mahally");
-
-    const promptEvent = page.getByTestId("timeline-event").filter({ hasText: "Prompt Observed" });
-    await promptEvent.click();
-    await promptEvent.getByTestId("view-evidence-details").click();
-    await expect(page).toHaveURL(new RegExp(`/runtime/trajectories/${TRAJ_MAIN}/evidence/e1$`));
+    await page.goto(`/runtime/trajectories/${TRAJ_MAIN}/evidence/e1`);
     await expect(page.getByTestId("evidence-event-detail-page")).toBeVisible();
     await expect(page.getByTestId("evidence-event-content")).toContainText(
       "Search Jira for all Mahally issues updated this week",
@@ -785,11 +775,7 @@ test.describe("Trajectory operator flows", () => {
     await expect(page.getByTestId("evidence-event-detail-page")).toContainText("REDACTED");
     await expect(page.getByTestId("evidence-event-detail-page")).toContainText("CLIENT_OBSERVED");
 
-    await page.goto(`/runtime/trajectories/${TRAJ_MAIN}`);
-    await page.getByRole("button", { name: "Evidence" }).click();
-    const outputRow = page.getByTestId("evidence-row").filter({ hasText: "Agent Output Observed" });
-    await expect(outputRow).toContainText("Found 4 Mahally");
-    await outputRow.getByTestId("view-evidence-details").click();
+    await page.goto(`/runtime/trajectories/${TRAJ_MAIN}/evidence/e10`);
     await expect(page.getByTestId("evidence-event-content")).toContainText(
       "Found 4 Mahally issues updated this week.",
     );

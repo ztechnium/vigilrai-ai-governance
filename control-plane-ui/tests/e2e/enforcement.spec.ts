@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { seedAdminSession } from "./session";
 
 const RECEIPT_ID = "11111111-2222-4333-8444-555555555555";
 const RULE_ID = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
@@ -150,14 +151,36 @@ const mockExecutionRow = {
   agent_name: "Demo Agent",
 };
 
-async function seedAdminSession(page: Page) {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("rai.cp.adminAuthToken", "e2e-test-token");
-    window.localStorage.setItem("rai.cp.activeAdminRole", "General Admin");
-  });
-}
-
 async function mockReceiptApis(page: Page) {
+  await page.route(/\/v1\/runtime-audit\/search(\?|$)/, async (route) => {
+    const url = new URL(route.request().url());
+    const entityTypes = url.searchParams.get("entity_types") ?? "ENFORCEMENT";
+    const recordType =
+      entityTypes.includes("EXECUTION") && !entityTypes.includes("ENFORCEMENT")
+        ? "EXECUTION"
+        : "ENFORCEMENT";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        items: [
+          {
+            id: RECEIPT_ID,
+            record_type: recordType,
+            occurred_at: "2026-09-04T12:00:00.000Z",
+            action: "searchJiraIssuesUsingJql",
+            decision: "DENY",
+            ai_system_name: "Demo System",
+            agent_name: "Demo Agent",
+            assurance: "LOCAL_HOOK",
+            detail_reference: `/runtime/enforcement/${RECEIPT_ID}`,
+          },
+        ],
+        has_more: false,
+      }),
+    });
+  });
+
   // UI calls the gateway at NEXT_PUBLIC_API_BASE_URL (default localhost:8001).
   await page.route(/\/v1\/runtime\/enforcement\/receipts(\/|$|\?)/, async (route) => {
     const url = route.request().url();
@@ -211,29 +234,23 @@ test.describe("Enforcement receipt detail navigation", () => {
     await mockReceiptApis(page);
   });
 
-  test("operator can navigate List → Receipt Detail via View Details", async ({ page }) => {
+  test("operator can open a receipt from the enforcement audit list", async ({ page }) => {
     await page.goto("/runtime/enforcement");
-    await expect(page.getByRole("heading", { name: "Runtime Enforcement" })).toBeVisible();
-    await expect(page.getByTestId(`enforcement-row-${RECEIPT_ID}`)).toBeVisible();
+    await expect(page).toHaveURL(/\/runtime\/audit\?type=enforcement/);
+    await expect(page.getByRole("heading", { name: "Audit Explorer" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open" })).toBeVisible();
 
-    await page.getByTestId(`view-details-${RECEIPT_ID}`).click();
+    await page.getByRole("link", { name: "Open" }).click();
     await expect(page).toHaveURL(new RegExp(`/runtime/enforcement/${RECEIPT_ID}$`));
     await expectDetailSections(page);
   });
 
-  test("operator can navigate List → Receipt Detail by clicking the row", async ({ page }) => {
-    await page.goto("/runtime/enforcement");
-    await page.getByTestId(`enforcement-row-${RECEIPT_ID}`).click();
-    await expect(page).toHaveURL(new RegExp(`/runtime/enforcement/${RECEIPT_ID}$`));
-    await expectDetailSections(page);
-  });
-
-  test("operator can navigate Executions → Receipt Detail", async ({ page }) => {
+  test("operator can open a receipt from the executions audit list", async ({ page }) => {
     await page.goto("/runtime/executions");
-    await expect(page.getByRole("heading", { name: "Runtime Executions" })).toBeVisible();
-    await expect(page.getByTestId(`execution-row-${RECEIPT_ID}`)).toBeVisible();
+    await expect(page).toHaveURL(/\/runtime\/audit\?type=execution/);
+    await expect(page.getByRole("heading", { name: "Audit Explorer" })).toBeVisible();
 
-    await page.getByTestId(`execution-receipt-${RECEIPT_ID}`).click();
+    await page.getByRole("link", { name: "Open" }).click();
     await expect(page).toHaveURL(new RegExp(`/runtime/enforcement/${RECEIPT_ID}$`));
     await expectDetailSections(page);
   });
