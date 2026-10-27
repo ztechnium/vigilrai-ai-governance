@@ -59,6 +59,7 @@ def _register(client: TestClient, db_session) -> dict:
             email_verified_at=datetime.now(timezone.utc),
         )
     )
+    db_session.flush()
     db_session.add(
         AdminCredential(
             email=email,

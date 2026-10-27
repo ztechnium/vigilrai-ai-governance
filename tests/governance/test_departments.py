@@ -29,7 +29,6 @@ def test_membership_can_be_placed_in_a_department(db_session, test_organization)
     marketing = service.list_departments()[0]
 
     membership = service.create_membership(
-        test_organization.id,
         user_id="user-marketing",
         role=GovernanceRole.RAI_OFFICER.value,
         created_by="tester",
@@ -39,5 +38,6 @@ def test_membership_can_be_placed_in_a_department(db_session, test_organization)
     assert membership["department_id"] == marketing["id"]
     assert membership["department_name"] == "Marketing"
 
-    listed = service.list_memberships(test_organization.id)
-    assert listed[0]["department_name"] == "Marketing"
+    listed = service.list_memberships()
+    row = next(item for item in listed if item["user_id"] == "user-marketing")
+    assert row["department_name"] == "Marketing"

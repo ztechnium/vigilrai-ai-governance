@@ -108,8 +108,12 @@ def test_child_does_not_replace_parent_deny(db_session, runtime_stack):
 
 
 def test_cost_reservation_reconcile(db_session, runtime_stack):
+    from rai_gateway.models.risk_intelligence import RuntimeBudget
+
     system = runtime_stack["system"]
     identity = runtime_stack["identity"]
+    db_session.query(RuntimeBudget).update({RuntimeBudget.enabled: False})
+    db_session.commit()
     svc = BudgetService(db_session)
     svc.create_budget(
         ai_system_id=system.id,

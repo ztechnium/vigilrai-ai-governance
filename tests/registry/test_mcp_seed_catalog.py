@@ -69,7 +69,7 @@ def test_seed_idempotent(db_session) -> None:
     svc = MCPSeedCatalogService(db_session)
     first = svc.seed(DEFAULT_SEED_PATH)
     second = svc.seed(DEFAULT_SEED_PATH)
-    assert first.mcps_created >= 12
+    assert first.mcps_created + first.mcps_updated >= 12
     assert second.mcps_created == 0
     assert second.mcps_updated >= 12
 

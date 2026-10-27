@@ -648,6 +648,17 @@ def test_api_rbac_evaluation_read(
             )
         )
         db_session.add(UserRole(user_id=user_id, role_id="auditor"))
+        from rai_gateway.governance.domain import GovernanceRole, MembershipStatus
+        from rai_gateway.models.governance import OrganizationMembership
+
+        db_session.add(
+            OrganizationMembership(
+                user_id=user_id,
+                role=GovernanceRole.AUDITOR.value,
+                status=MembershipStatus.ACTIVE.value,
+                created_by=user_id,
+            )
+        )
         db_session.commit()
 
     token = create_admin_access_token(email=email, user_id=user_id, roles=["auditor"])

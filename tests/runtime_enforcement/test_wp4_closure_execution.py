@@ -46,23 +46,47 @@ def _hook_runtime_stack(db_session, *, system_key: str = "closure-sys") -> dict:
     registry = RegistryService(db_session)
     mcp = (
         db_session.query(MCPServer)
-        .filter(MCPServer.server_key == "atlassian")
+        .filter(
+            MCPServer.server_key == "atlassian",
+            MCPServer.scope == CatalogScope.ORGANIZATION.value,
+        )
         .order_by(MCPServer.created_at.desc())
         .first()
     )
+    if mcp is None:
+        mcp = (
+            db_session.query(MCPServer)
+            .filter(MCPServer.server_key == "atlassian")
+            .order_by(MCPServer.created_at.desc())
+            .first()
+        )
     assert mcp is not None
     tool = (
         db_session.query(ToolResource)
-        .filter(ToolResource.tool_key == "atlassian.getAccessibleAtlassianResources")
+        .filter(
+            ToolResource.tool_key == "atlassian.getAccessibleAtlassianResources",
+            ToolResource.scope == CatalogScope.ORGANIZATION.value,
+        )
         .order_by(ToolResource.created_at.desc())
         .first()
     )
+    if tool is None:
+        tool = (
+            db_session.query(ToolResource)
+            .filter(
+                ToolResource.tool_key == "atlassian.getAccessibleAtlassianResources"
+            )
+            .order_by(ToolResource.created_at.desc())
+            .first()
+        )
     assert tool is not None
-    # Make seeded catalog rows visible to the tenant for version binding.
+    # Make seeded catalog rows visible for version binding without cloning the key.
     mcp.status = "ACTIVE"
-    mcp.scope = CatalogScope.ORGANIZATION.value
+    if mcp.scope != CatalogScope.ORGANIZATION.value:
+        mcp.scope = CatalogScope.ORGANIZATION.value
     tool.status = "ACTIVE"
-    tool.scope = CatalogScope.ORGANIZATION.value
+    if tool.scope != CatalogScope.ORGANIZATION.value:
+        tool.scope = CatalogScope.ORGANIZATION.value
     db_session.commit()
 
     system = registry.create_ai_system(

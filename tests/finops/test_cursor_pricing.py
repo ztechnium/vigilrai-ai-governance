@@ -44,8 +44,8 @@ def test_estimate_cursor_model_without_a_database_row(db_session):
     )
     assert estimate["reason"] == "OK"
     assert estimate["model"] == "grok-4.7"
-    # $2 input + $6 output per million tokens.
-    assert abs(estimate["estimated_cost"] - 8.0) < 1e-9
+    # $2 input + $6 output per million, doubled once input exceeds the 256k tier.
+    assert abs(estimate["estimated_cost"] - 16.0) < 1e-9
     assert estimate["cursor_token_rate_applied"] is False
 
 
@@ -96,7 +96,7 @@ def test_teams_token_rate_applies_to_third_party_only(db_session):
         input_tokens=1_000_000,
         plan="enterprise",
     )
-    assert abs(first_party["estimated_cost"] - 2.0) < 1e-9
+    assert abs(first_party["estimated_cost"] - 4.0) < 1e-9
     assert first_party["cursor_token_rate_applied"] is False
 
     individual = svc.estimate_cost(
@@ -128,7 +128,7 @@ def test_start_plan_blocks_other_models_and_fast_mode(db_session):
         plan="start",
     )
     assert standard["model"] == "grok-4.7"
-    assert abs(standard["estimated_cost"] - 2.0) < 1e-9
+    assert abs(standard["estimated_cost"] - 4.0) < 1e-9
 
 
 def test_seed_is_idempotent_and_preserves_admin_prices(db_session):

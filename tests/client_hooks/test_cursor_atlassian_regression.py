@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from uuid import uuid4
+
 from rai_gateway.client_hooks.domain import NativeHookEvent
 from rai_gateway.client_hooks.service import ClientHookService
 from rai_gateway.identity.domain import DelegatorType
@@ -45,8 +47,9 @@ def _atlassian_runtime_stack(db_session) -> dict:
     mcp.status = "ACTIVE"
     db_session.commit()
 
+    suffix = uuid4().hex[:8]
     system = registry.create_ai_system(
-        system_key="cursor-atlassian-sys",
+        system_key=f"cursor-atlassian-sys-{suffix}",
         name="Cursor Atlassian Sys",
         created_by="tester",
     )
@@ -55,7 +58,7 @@ def _atlassian_runtime_stack(db_session) -> dict:
 
     agent = registry.create_agent(
         system.id,
-        agent_key="cursor-atlassian-agent",
+        agent_key=f"cursor-atlassian-agent-{suffix}",
         name="Atlassian Agent",
         created_by="tester",
     )
